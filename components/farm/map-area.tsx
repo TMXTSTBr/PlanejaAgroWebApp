@@ -12,7 +12,7 @@ import {
 } from 'lucide-react'
 import dynamic from 'next/dynamic'
 
-// 🔥 IMPORT DINÂMICO DO MAPA
+// IMPORT DO MAPA
 const LeafletMap = dynamic(
   () => import('./leaflet-map').then((mod) => mod.LeafletMap),
   { ssr: false }
@@ -81,7 +81,7 @@ export function MapArea({
   if (!mounted) return null
 
   return (
-    <div className="relative h-full w-full z-0">
+    <div className="relative h-full w-full">
 
       {/* MAPA */}
       <LeafletMap
@@ -95,9 +95,9 @@ export function MapArea({
         activeLayer={activeLayer}
       />
 
-      {/* CONTROLES DE DESENHO */}
+      {/* CONTROLES */}
       {isDrawing && (
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-2 z-[1000]">
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-2 z-10">
           <Button onClick={handleUndoPoint} disabled={drawingPoints.length === 0}>
             <Undo2 />
           </Button>
@@ -115,23 +115,21 @@ export function MapArea({
         </div>
       )}
 
-      {/* BOTÃO DESENHAR */}
       {!isDrawing && (
-        <div className="absolute bottom-4 left-4 z-[1000]">
+        <div className="absolute bottom-4 left-4 z-10">
           <Button onClick={onToggleDrawing}>
             <Pencil /> Desenhar Área
           </Button>
         </div>
       )}
 
-      {/* CAMADAS */}
-      <div className="absolute top-4 right-4 z-[1000]">
+      <div className="absolute top-4 right-4 z-10">
         <Button onClick={() => setShowLayerMenu(!showLayerMenu)}>
           <Layers />
         </Button>
 
         {showLayerMenu && (
-          <div className="bg-white shadow rounded mt-2 z-[1000]">
+          <div className="bg-white shadow rounded mt-2">
             <button onClick={() => setActiveLayer('satellite')}>Satélite</button>
             <button onClick={() => setActiveLayer('street')}>Mapa</button>
             <button onClick={() => setActiveLayer('terrain')}>Terreno</button>
@@ -139,8 +137,7 @@ export function MapArea({
         )}
       </div>
 
-      {/* INFO */}
-      <div className="absolute top-4 left-4 z-[1000] bg-white p-2 rounded shadow text-sm">
+      <div className="absolute top-4 left-4 z-10 bg-white p-2 rounded shadow text-sm">
         {fields.length} áreas
       </div>
     </div>
