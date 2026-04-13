@@ -73,67 +73,47 @@ export function LeafletMap({
   activeLayer,
 }: LeafletMapProps) {
   return (
-    <>
-      {/* CSS do Leaflet */}
-      <link
-        rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      />
+  <>
+    {/* CSS do Leaflet */}
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
 
-      <MapContainer
-        center={[-15.5989, -56.0949]}
-        zoom={14}
-        className="h-full w-full"
-        zoomControl={false}
-        attributionControl={false}
-        style={{ cursor: isDrawing ? 'crosshair' : 'grab' }}
-      >
-        <TileLayer url={tileLayers[activeLayer].url} maxZoom={19} />
+    <MapContainer
+      center={[-15.5989, -56.0949]}
+      zoom={14}
+      className="h-full w-full"
+      zoomControl={false}
+      attributionControl={false}
+      style={{ cursor: isDrawing ? 'crosshair' : 'grab' }}
+    >
+      <TileLayer url={tileLayers[activeLayer].url} maxZoom={19} />
 
-        {/* 🔥 DESENHAR ÁREAS SALVAS */}
-        {fields.map((field) => (
-          <Polygon
-            key={field.id}
-            positions={field.coordinates.map((c) => [c.lat, c.lng] as [number, number])}
-            pathOptions={{
-              color: field.color,
-              fillColor: field.color,
-              fillOpacity: selectedFieldId === field.id ? 0.5 : 0.35,
-              weight: selectedFieldId === field.id ? 3 : 2,
-            }}
-            eventHandlers={{
-              click: () => onSelectField(field.id),
-            }}
-          >
-            <Tooltip permanent direction="center">
-              <div style={{
-                background: 'white',
-                padding: '4px',
-                borderRadius: '6px',
-                fontSize: '12px'
-              }}>
-                {field.name} ({field.area} ha)
-              </div>
-            </Tooltip>
-          </Polygon>
-        ))}
+      {/* campos */}
+      {fields.map((field) => (
+        <Polygon
+          key={field.id}
+          positions={field.coordinates.map((c) => [c.lat, c.lng] as [number, number])}
+        />
+      ))}
 
-        {/* 🔥 DESENHO EM TEMPO REAL */}
-        {drawingPoints.length >= 2 && (
-          <Polygon
-            positions={drawingPoints.map((p) => [p.lat, p.lng] as [number, number])}
-            pathOptions={{
-              color: '#22c55e',
-              fillColor: '#22c55e',
-              fillOpacity: 0.3,
-              dashArray: '5, 5',
-            }}
-          />
-        )}
+      {/* desenho */}
+      {drawingPoints.length >= 2 && (
+        <Polygon
+          positions={drawingPoints.map((p) => [p.lat, p.lng] as [number, number])}
+        />
+      )}
 
-        <MapClickHandler isDrawing={isDrawing} onMapClick={onMapClick} />
-        <MapController fields={fields} />
-      </MapContainer>
-    </>
-  )
-}
+      <MapClickHandler isDrawing={isDrawing} onMapClick={onMapClick} />
+      <MapController fields={fields} />
+    </MapContainer>
+
+    {/* 🔥 AQUI FORA DO MAPCONTAINER */}
+    <style jsx global>{`
+      .leaflet-container {
+        z-index: 0 !important;
+      }
+    `}</style>
+  </>
+)
