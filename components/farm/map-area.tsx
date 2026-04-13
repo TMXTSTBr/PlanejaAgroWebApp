@@ -4,18 +4,12 @@ import { useState, useCallback, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Field, LatLng, calculatePolygonArea, fieldColors } from '@/lib/farm-types'
 import {
-  Plus,
-  Minus,
-  Crosshair,
   Pencil,
   Layers,
-  Map,
-  Satellite,
   Check,
   X,
   Undo2,
 } from 'lucide-react'
-import { cn } from '@/lib/utils'
 import dynamic from 'next/dynamic'
 
 // 🔥 IMPORT DINÂMICO DO MAPA
@@ -87,9 +81,9 @@ export function MapArea({
   if (!mounted) return null
 
   return (
-    <div className="relative h-full w-full">
+    <div className="relative h-full w-full z-0">
 
-      {/* 🔥 MAPA CORRIGIDO */}
+      {/* MAPA */}
       <LeafletMap
         key={JSON.stringify(fields)}
         fields={fields}
@@ -103,7 +97,7 @@ export function MapArea({
 
       {/* CONTROLES DE DESENHO */}
       {isDrawing && (
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-2 z-50">
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-2 z-[1000]">
           <Button onClick={handleUndoPoint} disabled={drawingPoints.length === 0}>
             <Undo2 />
           </Button>
@@ -123,7 +117,7 @@ export function MapArea({
 
       {/* BOTÃO DESENHAR */}
       {!isDrawing && (
-        <div className="absolute bottom-4 left-4 z-50">
+        <div className="absolute bottom-4 left-4 z-[1000]">
           <Button onClick={onToggleDrawing}>
             <Pencil /> Desenhar Área
           </Button>
@@ -131,13 +125,13 @@ export function MapArea({
       )}
 
       {/* CAMADAS */}
-      <div className="absolute top-4 right-4 z-50">
+      <div className="absolute top-4 right-4 z-[1000]">
         <Button onClick={() => setShowLayerMenu(!showLayerMenu)}>
           <Layers />
         </Button>
 
         {showLayerMenu && (
-          <div className="bg-white shadow rounded mt-2">
+          <div className="bg-white shadow rounded mt-2 z-[1000]">
             <button onClick={() => setActiveLayer('satellite')}>Satélite</button>
             <button onClick={() => setActiveLayer('street')}>Mapa</button>
             <button onClick={() => setActiveLayer('terrain')}>Terreno</button>
@@ -146,7 +140,7 @@ export function MapArea({
       </div>
 
       {/* INFO */}
-      <div className="absolute top-4 left-4 z-50 bg-white p-2 rounded shadow text-sm">
+      <div className="absolute top-4 left-4 z-[1000] bg-white p-2 rounded shadow text-sm">
         {fields.length} áreas
       </div>
     </div>
