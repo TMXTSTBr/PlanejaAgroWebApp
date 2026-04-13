@@ -13,29 +13,13 @@ import { FieldsList } from '@/components/farm/fields-list'
 import { Field } from '@/lib/farm-types'
 import { cn } from '@/lib/utils'
 
-// Dados iniciais
-const initialFields: Field[] = [
-  {
-    id: '1',
-    name: 'Talhao Norte',
-    type: 'crop',
-    color: '#22c55e',
-    area: 45.5,
-    notes: 'Plantio de soja - safra 2024/2025',
-    coordinates: [
-      { lat: -15.5950, lng: -56.0980 },
-      { lat: -15.5950, lng: -56.0920 },
-      { lat: -15.5990, lng: -56.0920 },
-      { lat: -15.5990, lng: -56.0980 },
-    ],
-  }
-]
+const initialFields: Field[] = []
 
 const navTitles: Record<string, string> = {
   dashboard: 'Dashboard',
   fields: 'Gerenciar Talhoes',
-  map: 'Visualizacao do Mapa',
-  settings: 'Configuracoes',
+  map: 'Mapa',
+  settings: 'Configurações',
 }
 
 export default function FarmPlannerPage() {
@@ -55,137 +39,49 @@ export default function FarmPlannerPage() {
   // 🔄 AUTO LOAD
   useEffect(() => {
     const dados = localStorage.getItem("fields")
-    if (dados) {
-      setFields(JSON.parse(dados))
-    }
+    if (dados) setFields(JSON.parse(dados))
   }, [])
 
-  const selectedField = fields.find((f) => f.id === selectedFieldId) || null
+  const selectedField = fields.find(f => f.id === selectedFieldId) || null
 
-  const handleSelectField = useCallback((id: string | null) => {
+  const handleSelectField = (id: string | null) => {
     setSelectedFieldId(id)
     if (id) setPanelOpen(true)
-  }, [])
+  }
 
-  const handleSaveField = useCallback((updatedField: Field) => {
-    setFields((prev) =>
-      prev.map((f) => (f.id === updatedField.id ? updatedField : f))
-    )
-  }, [])
+  const handleAddField = (newField: Field) => {
+    setFields(prev => [...prev, newField])
+  }
 
-  const handleDeleteField = useCallback((id: string) => {
-    setFields((prev) => prev.filter((f) => f.id !== id))
-    setSelectedFieldId(null)
-    setPanelOpen(false)
-  }, [])
-
-  const handleAddField = useCallback((newField: Field) => {
-    setFields((prev) => [...prev, newField])
-    setSelectedFieldId(newField.id)
-    setPanelOpen(true)
-  }, [])
-
-  const handleAddArea = useCallback(() => {
-    setIsDrawing(true)
-    setActiveNav('map')
-  }, [])
-
-  // 💾 BOTÃO SALVAR
-  const handleSave = useCallback(() => {
+  const handleSave = () => {
     localStorage.setItem("fields", JSON.stringify(fields))
-    alert('Dados salvos com sucesso!')
-  }, [fields])
+    alert("Salvo!")
+  }
 
-  // 🔄 BOTÃO CARREGAR
-  const handleLoad = useCallback(() => {
+  const handleLoad = () => {
     const dados = localStorage.getItem("fields")
-
     if (dados) {
       setFields(JSON.parse(dados))
-      alert("Dados carregados!")
-    } else {
-      alert("Nenhum dado salvo!")
+      alert("Carregado!")
     }
-  }, [])
+  }
 
   return (
-    <div className="h-screen w-screen overflow-hidden bg-background">
-      <div className="hidden lg:block">
-        <Sidebar
-          fields={fields}
-          selectedFieldId={selectedFieldId}
-          onSelectField={handleSelectField}
-          isOpen={sidebarOpen}
-          onToggle={() => setSidebarOpen(!sidebarOpen)}
-          activeNav={activeNav}
-          onNavChange={setActiveNav}
-        />
-      </div>
+    <div className="h-screen w-screen flex flex-col">
+      <Topbar
+        title={navTitles[activeNav]}
+        onSave={handleSave}
+        onLoad={handleLoad}
+        onAddArea={() => setIsDrawing(true)}
+      />
 
-      <div
-        className={cn(
-          'flex h-full flex-col transition-all duration-300',
-          sidebarOpen ? 'lg:pl-64' : 'lg:pl-16'
-        )}
-      >
-        <Topbar
-          title={navTitles[activeNav]}
-          sidebarOpen={sidebarOpen}
-          onToggleSidebar={() => setMobileSidebarOpen(true)}
-          onSave={handleSave}
-          onLoad={handleLoad}
-          onAddArea={handleAddArea}
-        />
-
-        <main className="flex-1 pt-16 pb-16 lg:pb-0 overflow-auto">
-          <div className="h-full p-4">
-            {activeNav === 'map' && (
-              <MapArea
-                fields={fields}
-                selectedFieldId={selectedFieldId}
-                onSelectField={handleSelectField}
-                isDrawing={isDrawing}
-                onToggleDrawing={() => setIsDrawing(!isDrawing)}
-                onAddField={handleAddField}
-              />
-            )}
-
-            {activeNav === 'fields' && (
-              <FieldsList
-                fields={fields}
-                selectedFieldId={selectedFieldId}
-                onSelectField={handleSelectField}
-                onAddField={handleAddArea}
-              />
-            )}
-
-            {activeNav === 'dashboard' && (
-              <DashboardView fields={fields} />
-            )}
-
-            {activeNav === 'settings' && <SettingsView />}
-          </div>
-        </main>
-
-        <FieldPanel
-          field={selectedField}
-          isOpen={panelOpen}
-          onClose={() => setPanelOpen(false)}
-          onSave={handleSaveField}
-          onDelete={handleDeleteField}
-        />
-      </div>
-
-      <MobileNav activeNav={activeNav} onNavChange={setActiveNav} />
-
-      <MobileSidebar
+      <MapArea
         fields={fields}
         selectedFieldId={selectedFieldId}
         onSelectField={handleSelectField}
-        isOpen={mobileSidebarOpen}
-        onClose={() => setMobileSidebarOpen(false)}
-        activeNav={activeNav}
-        onNavChange={setActiveNav}
+        isDrawing={isDrawing}
+        onToggleDrawing={() => setIsDrawing(!isDrawing)}
+        onAddField={handleAddField}
       />
     </div>
   )
