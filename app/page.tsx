@@ -31,17 +31,14 @@ export default function FarmPlannerPage() {
   const [isDrawing, setIsDrawing] = useState(false)
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
 
-  // 🔥 AUTO SAVE
   useEffect(() => {
-    localStorage.setItem("fields", JSON.stringify(fields))
-  }, [fields])
+  localStorage.setItem("fields", JSON.stringify(fields))
+}, [fields])
 
-  // 🔄 AUTO LOAD
-  useEffect(() => {
-    const dados = localStorage.getItem("fields")
-    if (dados) setFields(JSON.parse(dados))
-  }, [])
-
+useEffect(() => {
+  const dados = localStorage.getItem("fields")
+  if (dados) setFields(JSON.parse(dados))
+}, [])
   const selectedField = fields.find(f => f.id === selectedFieldId) || null
 
   const handleSelectField = (id: string | null) => {
